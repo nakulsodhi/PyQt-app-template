@@ -48,15 +48,21 @@ def return_filename(path):
     return file_obj.stem
 
 def sample_html_text():
+    """
+    Description: Sample HTML Text
+    Parameters: None
+    Return: HTML sample as a string 
+    """
     file = open("sample.html", "r")
     string = file.read()
     return string
 
-
-#def open_file_in_editor(filePath):
-#    pass
-
 def append_file_history(path):
+    """
+    Description: Append the file history database
+    Parameters: path to the opened file
+    Return: None 
+    """
     filename = return_filename(path)
     #delete existing record
     fileHistoryDatabase.delete_record(path)
@@ -64,12 +70,22 @@ def append_file_history(path):
     fileHistoryDatabase.add_record( (filename,path,time) )
 
 def get_last_file():
+    """
+    Description: Get the last modified file from the database
+    Parameters: None
+    Return: The db record tuple (filename, path, date modified) 
+    """
     rec = fileHistoryDatabase.get_record()
     recordReturn = rec[-1]
     # [Not Required Anymore] fileHistoryDatabase.delete_record(recordReturn[1])
     return recordReturn
 
 def eval_expression(expression):
+    """
+    Description: Given a math expression in string form, evaluate it 
+    Parameters: String expression 
+    Return: either int/float solution or the ERROR string 
+    """
     try:
         answer = eval(expression)
     except:

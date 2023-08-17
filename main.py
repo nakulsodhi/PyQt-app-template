@@ -37,13 +37,12 @@ class Window(QMainWindow):
     def __init__(self):
         super(Window,self).__init__()
 ######################### Resolution
+        #update screen height and width constants
         windowHeight = int(QGuiApplication.primaryScreen().availableSize().height() * 0.5)
         windowWidth = int(QGuiApplication.primaryScreen().availableSize().width() * 0.5)
-        #update screen height and width constants
-        WINDOW_WIDTH = windowWidth
-        WINDOW_HEIGHT = windowHeight
         self.resize(windowWidth, windowHeight)
         self.setWindowTitle("PyQt6 Samples")
+        self.setWindowIcon(QIcon("favicon.ico"))
 ####################################
           
 
@@ -93,6 +92,7 @@ class TabWidget(QWidget):
         """
         self.__clickyButtonTab1 = None
         self.__userSpooked = False
+        self.__fileLoaded = False
         self.counter = 0
         self.counterText = QLabel(f"Counter: {self.counter}")
         self.calc = None
@@ -188,6 +188,13 @@ Permanent widgets are added on the right side of the statusbar.
 #################################### END Tab 4
 
 
+#################################### About window
+        aboutText = QAction('&About', self)
+        aboutText.triggered.connect(self.help_clicked)
+        self.mainWindow.helpMenu.addAction(aboutText)
+####################################
+
+
 #################################### Functions for TabWidget
     def clicky_button_func(self):
         """
@@ -274,6 +281,7 @@ Permanent widgets are added on the right side of the statusbar.
         with open(self.__currentlyOpenFilePath) as file:
             self.textEditor.setText(file.read())
         self.tabs.setCurrentIndex(3)
+        self.__fileLoaded = True
         business_logic.append_file_history(self.__currentlyOpenFilePath)
 
     def get_file_name(self):
@@ -291,10 +299,15 @@ Permanent widgets are added on the right side of the statusbar.
            Parameters: self
            Return: none 
            """   
-        with open(self.__currentlyOpenFilePath, 'w') as f:
-            f.write(self.textEditor.toPlainText())
+        if self.__fileLoaded:
+            with open(self.__currentlyOpenFilePath, 'w') as f:
+                f.write(self.textEditor.toPlainText())
             business_logic.append_file_history(self.__currentlyOpenFilePath)
-        self.mainWindow.statusBar().showMessage(f"File { business_logic.return_filename(self.__currentlyOpenFilePath) } Saved")
+            self.mainWindow.statusBar().showMessage(f"File { business_logic.return_filename(self.__currentlyOpenFilePath) } Saved")
+        else:
+            self.mainWindow.statusBar().showMessage(f"Please open a file before you can save")
+
+
 
     def restore_notepad_session(self):
         """
@@ -305,6 +318,20 @@ Permanent widgets are added on the right side of the statusbar.
         (filename, path, dateModified) = business_logic.get_last_file()
         self.open_file_in_editor(path)
         self.mainWindow.statusBar().showMessage(f"File {filename} opened   Last Modified {dateModified} ")
+    
+    def help_clicked(self):
+        """
+        Description: Open the About dialog box
+        Parameters: self
+        Return: None
+        """
+        dlg = QMessageBox(self)
+        dlg.setWindowTitle("About")
+        dlg.setText("Template created by CHRIM Bioinformatics\n\nProgrammer: Nakul Sodhi \
+                    \nSupervisor and consultant: Richard Leduc\nv1.0\n")
+        dlg.setIconPixmap(QPixmap('favicon.ico'))
+        dlg.exec()
+        dlg.show()
         
         
 ####################################
